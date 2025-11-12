@@ -2,6 +2,8 @@ img_dist = imreadbw('img1.jpg');
 imagesc(img_dist)
 colormap gray
 
+%%
+
 K = [ 388.6795 0  343.7415;
        0  389.4250 234.6182;
        0 0 1];
@@ -12,28 +14,6 @@ KNew = [250 0.0 512;
 
 function df = radial_distortion_factor_1(r)
     df = (1 / (0.926 * r)) * atan(2*r*tan(0.926/2));
-end
-
-function img_undist = undistort(img_dist, K)
-    size = size(img_dist)
-    H = size(1);
-    W = size(2);
-
-    img_undist = zeros(H, W);
-    for v = 1:H
-        for u = 1:W
-            % calculate r
-            r = sqrt((v-H)^2 + (u-W)^2);
-            df = radial_distortion_factor_1(r);
-            p = K * [u; v; 1];
-            p_undist = p * df;
-            u_undist = round(p_undist(1) / p_undist(3));
-            v_undist = round(p_undist(2) / p_undist(3));
-            if u_undist > 0 && u_undist <= W && v_undist > 0 && v_undist <= H
-                img_undist(v_undist, u_undist) = img_dist(v, u);
-            end
-        end
-    end
 end
 
 function img_undist = undistort(img_dist, K, KNew, H_new, W_new, radial_distortion_factor)
@@ -92,6 +72,10 @@ axis equal
 %%
 
 img_dist = imreadbw('img2.jpg');
+imagesc(img_dist)
+colormap gray
+
+%%
 
 K = [279.7399 0 347.32012;
      0 279.7399 234.99819;
@@ -106,7 +90,6 @@ function df = radial_distortion_factor_2(r)
 end
 
 img_undist = undistort(img_dist, K, KNew, 768, 1024, @radial_distortion_factor_2);
-interpn()
 
 subplot(1,2,2)
 imagesc(img_dist)
